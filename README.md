@@ -4,6 +4,10 @@
 
 ---
 
+This is a fork of [obsidian-kanban](https://github.com/community-archive/obsidian-kanban) by mgmeyers (community-archive). Modifications © 2026 Aughra, licensed GPL-3.0 (see [LICENSE.md](LICENSE.md)), same as the original.
+
+---
+
 Create markdown-backed Kanban boards in [Obsidian](https://obsidian.md/)
 
 - [Bugs, Issues, & Feature Requests](https://github.com/mgmeyers/obsidian-kanban/issues)
@@ -16,3 +20,16 @@ Create markdown-backed Kanban boards in [Obsidian](https://obsidian.md/)
 ## Documentation
 
 Find the plugin documentation here: [Obsidian Kanban Plugin Documentation](https://publish.obsidian.md/kanban/)
+
+## Development
+
+All install/build/typecheck commands run inside the provided Docker container — nothing is installed globally on the host.
+
+```sh
+docker compose build                        # build the dev image (Node LTS + yarn)
+docker compose run --rm dev yarn install     # install dependencies (into a named volume)
+docker compose run --rm dev yarn build       # build main.js / styles.css
+docker compose run --rm dev yarn run typecheck
+```
+
+`node_modules` lives in a Docker named volume (not bind-mounted), to avoid mixing Linux binaries into the macOS host and to keep installs fast.
