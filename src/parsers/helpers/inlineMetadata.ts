@@ -48,7 +48,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-import { TFile } from 'obsidian';
+import { App, TFile } from 'obsidian';
 import { RRule } from 'rrule';
 import { Item } from 'src/components/types';
 import { t } from 'src/lang/helpers';
@@ -168,7 +168,7 @@ export function iconToPriority(icon: string) {
   return null;
 }
 
-export function getTasksPlugin() {
+export function getTasksPlugin(app: App) {
   if (!(app as any).plugins.enabledPlugins.has('obsidian-tasks-plugin')) {
     return null;
   }
@@ -176,14 +176,14 @@ export function getTasksPlugin() {
   return (app as any).plugins.plugins['obsidian-tasks-plugin'];
 }
 
-function getTasksPluginSettings() {
+function getTasksPluginSettings(app: App) {
   return (app as any).workspace.editorSuggest.suggests.find(
     (s: any) => s.settings && s.settings.taskFormat
   )?.settings;
 }
 
-export function getTaskStatusDone(): string {
-  const settings = getTasksPluginSettings();
+export function getTaskStatusDone(app: App): string {
+  const settings = getTasksPluginSettings(app);
   const statuses = settings?.statusSettings;
   if (!statuses) return 'x';
 
@@ -194,12 +194,12 @@ export function getTaskStatusDone(): string {
   return done.symbol;
 }
 
-export function getTaskStatusPreDone(): string {
-  const settings = getTasksPluginSettings();
+export function getTaskStatusPreDone(app: App): string {
+  const settings = getTasksPluginSettings(app);
   const statuses = settings?.statusSettings;
   if (!statuses) return ' ';
 
-  const done = getTaskStatusDone();
+  const done = getTaskStatusDone(app);
 
   let preDone = statuses.coreStatuses?.find((s: any) => s.nextStatusSymbol === done);
   if (!preDone) preDone = statuses.customStatuses?.find((s: any) => s.nextStatusSymbol === done);
@@ -208,14 +208,18 @@ export function getTaskStatusPreDone(): string {
   return preDone.symbol;
 }
 
-export function toggleTaskString(item: string, file: TFile): string | null {
-  const plugin = getTasksPlugin();
+export function toggleTaskString(app: App, item: string, file: TFile): string | null {
+  const plugin = getTasksPlugin(app);
   if (!plugin) return null;
   return plugin.apiV1?.executeToggleTaskDoneCommand?.(item, file.path) ?? null;
 }
 
-export function toggleTask(item: Item, file: TFile): [string[], string[], number] | null {
-  const plugin = getTasksPlugin();
+export function toggleTask(
+  app: App,
+  item: Item,
+  file: TFile
+): [string[], string[], number] | null {
+  const plugin = getTasksPlugin(app);
   if (!plugin) {
     return null;
   }
@@ -223,7 +227,7 @@ export function toggleTask(item: Item, file: TFile): [string[], string[], number
   const prefix = `- [${item.data.checkChar}] `;
   const originalLines = item.data.titleRaw.split(/\n\r?/g);
 
-  const taskSettings = getTasksPluginSettings();
+  const taskSettings = getTasksPluginSettings(app);
   const recurrenceOnNextLine = !!taskSettings?.recurrenceOnNextLine;
 
   let which = 0;
@@ -414,11 +418,12 @@ function extractSpecialTaskFields(line: string): InlineField[] {
 }
 
 export function extractInlineFields(
+  app: App,
   line: string,
   includeTaskFields: boolean = false
 ): InlineField[] | null {
-  const dv = getDataviewPlugin();
-  const tasks = getTasksPlugin();
+  const dv = getDataviewPlugin(app);
+  const tasks = getTasksPlugin(app);
 
   let fields: InlineField[] = [];
   if (dv) {
@@ -452,7 +457,7 @@ export function extractInlineFields(
   return filteredFields;
 }
 
-export function getDataviewPlugin() {
+export function getDataviewPlugin(app: App) {
   if (!(app as any).plugins.enabledPlugins.has('dataview')) {
     return null;
   }

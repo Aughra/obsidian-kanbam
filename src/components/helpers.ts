@@ -51,16 +51,19 @@ export function maybeCompleteForMove(
   // If neither the old or new lane set it complete, leave it alone
   if (!oldShouldComplete && !newShouldComplete) return { next: item };
 
-  const isComplete = item.data.checked && item.data.checkChar === getTaskStatusDone();
+  const isComplete =
+    item.data.checked && item.data.checkChar === getTaskStatusDone(destinationStateManager.app);
 
   // If it already matches the new lane, leave it alone
   if (newShouldComplete === isComplete) return { next: item };
 
   if (newShouldComplete) {
-    item = update(item, { data: { checkChar: { $set: getTaskStatusPreDone() } } });
+    item = update(item, {
+      data: { checkChar: { $set: getTaskStatusPreDone(destinationStateManager.app) } },
+    });
   }
 
-  const updates = toggleTask(item, destinationStateManager.file);
+  const updates = toggleTask(destinationStateManager.app, item, destinationStateManager.file);
 
   if (updates) {
     const [itemStrings, checkChars, thisIndex] = updates;
@@ -86,7 +89,7 @@ export function maybeCompleteForMove(
           $set: newShouldComplete,
         },
         checkChar: {
-          $set: newShouldComplete ? getTaskStatusDone() : ' ',
+          $set: newShouldComplete ? getTaskStatusDone(destinationStateManager.app) : ' ',
         },
       },
     }),
@@ -119,7 +122,7 @@ export async function applyTemplate(stateManager: StateManager, templatePath?: s
     : null;
 
   if (templateFile && templateFile instanceof TFile) {
-    const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+    const activeView = stateManager.app.workspace.getActiveViewOfType(MarkdownView);
 
     try {
       // Force the view to source mode, if needed
@@ -206,7 +209,7 @@ export function getTemplatePlugins(app: App) {
   const templaterEnabled = (app as any).plugins.enabledPlugins.has('templater-obsidian');
   const templaterEmptyFileTemplate =
     templaterPlugin &&
-    (this.app as any).plugins.plugins['templater-obsidian'].settings?.empty_file_template;
+    (app as any).plugins.plugins['templater-obsidian'].settings?.empty_file_template;
 
   const templateFolder = templatesEnabled
     ? templatesPlugin.instance.options.folder

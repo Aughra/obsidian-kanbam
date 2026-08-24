@@ -292,7 +292,7 @@ export function useTableColumns(boardData: Board, stateManager: StateManager) {
               if (!moveInlineMetadata && !isTaskMetadata) return null;
 
               const isEmoji = m.wrapping === 'emoji-shorthand';
-              const val = getDataviewPlugin()?.api?.parse(m.value) ?? m.value;
+              const val = getDataviewPlugin(stateManager.app)?.api?.parse(m.value) ?? m.value;
               const isEmojiPriority = isEmoji && m.key === 'priority';
               const isDate = !!val?.ts;
 

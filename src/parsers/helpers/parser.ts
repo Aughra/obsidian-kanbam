@@ -1,4 +1,4 @@
-import { Stat } from 'obsidian';
+import { App, Stat } from 'obsidian';
 import { Item } from 'src/components/types';
 
 export interface FileAccessor {
@@ -31,7 +31,7 @@ export function replaceBrs(str: string) {
   return str.replace(/<br>/g, '\n').trim();
 }
 
-export function indentNewLines(str: string) {
+export function indentNewLines(app: App, str: string) {
   const useTab = (app.vault as any).getConfig('useTab');
   return str.trim().replace(/(?:\r\n|\n)/g, useTab ? '\n\t' : '\n    ');
 }

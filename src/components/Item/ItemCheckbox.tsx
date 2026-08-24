@@ -30,7 +30,7 @@ export const ItemCheckbox = memo(function ItemCheckbox({
   const [isHoveringCheckbox, setIsHoveringCheckbox] = useState(false);
 
   const onCheckboxChange = useCallback(() => {
-    const updates = toggleTask(item, stateManager.file);
+    const updates = toggleTask(stateManager.app, item, stateManager.file);
     if (updates) {
       const [itemStrings, checkChars, thisIndex] = updates;
       const replacements: Item[] = itemStrings.map((str, i) => {
@@ -47,7 +47,7 @@ export const ItemCheckbox = memo(function ItemCheckbox({
           data: {
             checkChar: {
               $apply: (v) => {
-                return v === ' ' ? getTaskStatusDone() : ' ';
+                return v === ' ' ? getTaskStatusDone(stateManager.app) : ' ';
               },
             },
             $toggle: ['checked'],

@@ -194,7 +194,7 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
   itemData.title = preprocessTitle(stateManager, dedentNewLines(executeDeletion(title)));
 
   const firstLineEnd = itemData.title.indexOf('\n');
-  const inlineFields = extractInlineFields(itemData.title, true);
+  const inlineFields = extractInlineFields(stateManager.app, itemData.title, true);
 
   if (inlineFields?.length) {
     const inlineMetadata = (itemData.metadata.inlineMetadata = inlineFields.reduce((acc, curr) => {
@@ -333,7 +333,7 @@ export function astToUnhydratedBoard(
 }
 
 export function updateItemContent(stateManager: StateManager, oldItem: Item, newContent: string) {
-  const md = `- [${oldItem.data.checkChar}] ${addBlockId(indentNewLines(newContent), oldItem)}`;
+  const md = `- [${oldItem.data.checkChar}] ${addBlockId(indentNewLines(stateManager.app, newContent), oldItem)}`;
 
   const ast = parseFragment(stateManager, md);
   const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0]);
@@ -358,7 +358,7 @@ export function newItem(
   checkChar: string,
   forceEdit?: boolean
 ) {
-  const md = `- [${checkChar}] ${indentNewLines(newContent)}`;
+  const md = `- [${checkChar}] ${indentNewLines(stateManager.app, newContent)}`;
   const ast = parseFragment(stateManager, md);
   const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0]);
 
@@ -400,11 +400,11 @@ export function reparseBoard(stateManager: StateManager, board: Board) {
   }
 }
 
-function itemToMd(item: Item) {
-  return `- [${item.data.checkChar}] ${addBlockId(indentNewLines(item.data.titleRaw), item)}`;
+function itemToMd(stateManager: StateManager, item: Item) {
+  return `- [${item.data.checkChar}] ${addBlockId(indentNewLines(stateManager.app, item.data.titleRaw), item)}`;
 }
 
-function laneToMd(lane: Lane) {
+function laneToMd(stateManager: StateManager, lane: Lane) {
   const lines: string[] = [];
 
   lines.push(`## ${replaceNewLines(laneTitleWithMaxItems(lane.data.title, lane.data.maxItems))}`);
@@ -416,7 +416,7 @@ function laneToMd(lane: Lane) {
   }
 
   lane.children.forEach((item) => {
-    lines.push(itemToMd(item));
+    lines.push(itemToMd(stateManager, item));
   });
 
   lines.push('');
@@ -426,12 +426,12 @@ function laneToMd(lane: Lane) {
   return lines.join('\n');
 }
 
-function archiveToMd(archive: Item[]) {
+function archiveToMd(stateManager: StateManager, archive: Item[]) {
   if (archive.length) {
     const lines: string[] = [archiveString, '', `## ${t('Archive')}`, ''];
 
     archive.forEach((item) => {
-      lines.push(itemToMd(item));
+      lines.push(itemToMd(stateManager, item));
     });
 
     return lines.join('\n');
@@ -440,12 +440,14 @@ function archiveToMd(archive: Item[]) {
   return '';
 }
 
-export function boardToMd(board: Board) {
+export function boardToMd(stateManager: StateManager, board: Board) {
   const lanes = board.children.reduce((md, lane) => {
-    return md + laneToMd(lane);
+    return md + laneToMd(stateManager, lane);
   }, '');
 
   const frontmatter = ['---', '', stringifyYaml(board.data.frontmatter), '---', '', ''].join('\n');
 
-  return frontmatter + lanes + archiveToMd(board.data.archive) + settingsToCodeblock(board);
+  return (
+    frontmatter + lanes + archiveToMd(stateManager, board.data.archive) + settingsToCodeblock(board)
+  );
 }

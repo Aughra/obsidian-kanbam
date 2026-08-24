@@ -141,13 +141,14 @@ export const DraggableItem = memo(function DraggableItem(props: DraggableItemPro
   const elementRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const search = useContext(SearchContext);
+  const { stateManager } = useContext(KanbanContext);
 
   const { itemIndex, ...innerProps } = props;
 
   const bindHandle = useDragHandle(measureRef, measureRef);
 
   const isMatch = search?.query ? innerProps.item.data.titleSearch.includes(search.query) : false;
-  const classModifiers: string[] = getItemClassModifiers(innerProps.item);
+  const classModifiers: string[] = getItemClassModifiers(stateManager.app, innerProps.item);
 
   return (
     <div

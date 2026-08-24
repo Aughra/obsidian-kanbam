@@ -27,7 +27,7 @@ export function InlineMetadata({ item, stateManager }: InlineMetadataProps) {
 
   if (!inlineMetadata || (!showInlineMetadata && !showTaskMetadata)) return null;
 
-  const dataview = getDataviewPlugin();
+  const dataview = getDataviewPlugin(stateManager.app);
 
   return (
     <span className={c('item-task-metadata')}>

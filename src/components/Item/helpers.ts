@@ -1,5 +1,14 @@
 import { FileWithPath, fromEvent } from 'file-selector';
-import { Platform, TFile, TFolder, htmlToMarkdown, moment, parseLinktext, setIcon } from 'obsidian';
+import {
+  App,
+  Platform,
+  TFile,
+  TFolder,
+  htmlToMarkdown,
+  moment,
+  parseLinktext,
+  setIcon,
+} from 'obsidian';
 import { StateManager } from 'src/StateManager';
 import { Path } from 'src/dnd/types';
 import { buildLinkToDailyNote } from 'src/helpers';
@@ -273,7 +282,7 @@ export function constructMenuTimePickerOnChange({
   };
 }
 
-export function getItemClassModifiers(item: Item) {
+export function getItemClassModifiers(app: App, item: Item) {
   const date = item.data.metadata.date;
   const classModifiers: string[] = [];
 
@@ -291,7 +300,7 @@ export function getItemClassModifiers(item: Item) {
     }
   }
 
-  if (item.data.checked && item.data.checkChar === getTaskStatusDone()) {
+  if (item.data.checked && item.data.checkChar === getTaskStatusDone(app)) {
     classModifiers.push('is-complete');
   }
 
