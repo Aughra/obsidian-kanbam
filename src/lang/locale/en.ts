@@ -236,6 +236,8 @@ const en = {
   'Move to top': 'Move to top',
   'Move to bottom': 'Move to bottom',
   'Move to list': 'Move to list',
+  'The note could not be created. The card title may be too long, or rejected by the file system.':
+    'The note could not be created. The card title may be too long, or rejected by the file system.',
 
   // components/Lane/LaneForm.tsx
   'Enter list title...': 'Enter list title...',
