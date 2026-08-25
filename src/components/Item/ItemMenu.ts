@@ -56,14 +56,42 @@ export function useItemMenu({
             .setTitle(t('New note from card'))
             .onClick(async () => {
               const prevTitle = item.data.titleRaw.split('\n')[0].trim();
-              const sanitizedTitle = prevTitle
-                .replace(embedRegEx, '$1')
-                .replace(wikilinkRegEx, '$1')
-                .replace(mdLinkRegEx, '$1')
-                .replace(tagRegEx, '$1')
-                .replace(illegalCharsRegEx, ' ')
-                .trim()
-                .replace(condenceWhiteSpaceRE, ' ');
+
+              // Date and time triggers belong to the card syntax, not to its title.
+              // They have to go before the wikilink pass: with linked dates enabled,
+              // `@[[2026-08-25]]` would otherwise become the plain text `@2026-08-25`
+              // and still leak into the file name.
+              const shouldLinkDates = stateManager.getSetting('link-date-to-daily-note');
+              const dateContentMatch = shouldLinkDates
+                ? '(?:\\[[^\\]]+\\]\\([^\\)]+\\)|\\[\\[[^\\]]+\\]\\])'
+                : '{[^}]+}';
+              const dateTriggerRegEx = new RegExp(
+                `(^|\\s)${escapeRegExpStr(
+                  stateManager.getSetting('date-trigger') as string
+                )}${dateContentMatch}`,
+                'g'
+              );
+              const timeTriggerRegEx = new RegExp(
+                `(^|\\s)${escapeRegExpStr(
+                  stateManager.getSetting('time-trigger') as string
+                )}{[^}]+}`,
+                'g'
+              );
+
+              const titleWithoutDates = prevTitle
+                .replace(timeTriggerRegEx, '$1')
+                .replace(dateTriggerRegEx, '$1')
+                .trim();
+
+              const sanitizedTitle =
+                titleWithoutDates
+                  .replace(embedRegEx, '$1')
+                  .replace(wikilinkRegEx, '$1')
+                  .replace(mdLinkRegEx, '$1')
+                  .replace(tagRegEx, '$1')
+                  .replace(illegalCharsRegEx, ' ')
+                  .trim()
+                  .replace(condenceWhiteSpaceRE, ' ') || t('Untitled');
 
               const newNoteFolder = stateManager.getSetting('new-note-folder');
               const newNoteTemplatePath = stateManager.getSetting('new-note-template');
@@ -125,8 +153,17 @@ export function useItemMenu({
 
               await applyTemplate(stateManager, newNoteTemplatePath as string | undefined);
 
+              // Anchor the link on the date-free part of the title, so the card keeps
+              // its date/time metadata beside the link instead of swallowing it.
+              // Falls back to the whole line when that part is empty (title made of
+              // triggers only) or no longer matches (trigger in the middle).
+              const linkTarget =
+                titleWithoutDates && item.data.titleRaw.includes(titleWithoutDates)
+                  ? titleWithoutDates
+                  : prevTitle;
+
               const newTitleRaw = item.data.titleRaw.replace(
-                prevTitle,
+                linkTarget,
                 stateManager.app.fileManager.generateMarkdownLink(newFile, stateManager.file.path)
               );
 
