@@ -30,6 +30,9 @@ export function LaneForm({ onNewLane, closeLaneForm }: LaneFormProps) {
 
   const createLane = useCallback(
     (cm: EditorView, title: string) => {
+      // Same guard as the card form: no lane with an empty title
+      if (!title.trim()) return;
+
       boardModifiers.addLane({
         ...LaneTemplate,
         id: generateInstanceId(),

@@ -26,6 +26,9 @@ export function ItemForm({ addItems, editState, setEditState, hideButton }: Item
   });
 
   const createItem = (title: string) => {
+    // A whitespace-only title still writes a blank `- [ ] ` card to the board file
+    if (!title.trim()) return;
+
     addItems([stateManager.getNewItem(title, ' ')]);
     const cm = editorRef.current;
     if (cm) {
