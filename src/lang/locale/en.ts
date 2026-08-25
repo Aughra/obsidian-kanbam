@@ -238,6 +238,8 @@ const en = {
   'Move to list': 'Move to list',
   'The note could not be created. The card title may be too long, or rejected by the file system.':
     'The note could not be created. The card title may be too long, or rejected by the file system.',
+  'The folder configured for new notes no longer exists. The note was created in the default location.':
+    'The folder configured for new notes no longer exists. The note was created in the default location.',
 
   // components/Lane/LaneForm.tsx
   'Enter list title...': 'Enter list title...',

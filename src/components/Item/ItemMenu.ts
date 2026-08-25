@@ -68,9 +68,34 @@ export function useItemMenu({
               const newNoteFolder = stateManager.getSetting('new-note-folder');
               const newNoteTemplatePath = stateManager.getSetting('new-note-template');
 
-              const targetFolder = newNoteFolder
-                ? (stateManager.app.vault.getAbstractFileByPath(newNoteFolder as string) as TFolder)
-                : stateManager.app.fileManager.getNewFileParent(stateManager.file.path);
+              // The configured path may be stale, or point at a file: check what
+              // it resolves to instead of casting it to a TFolder and hoping
+              const resolveFolder = (path: string) => {
+                const folder = stateManager.app.vault.getAbstractFileByPath(path);
+                return folder instanceof TFolder ? folder : null;
+              };
+
+              // A board that persists `new-note-folder: null` would otherwise mask
+              // the global setting, since only `undefined` falls through to it
+              const configuredFolders = [
+                newNoteFolder,
+                stateManager.getGlobalSetting('new-note-folder'),
+              ].filter((path): path is string => typeof path === 'string' && path !== '');
+              const configuredTarget =
+                configuredFolders.map(resolveFolder).find((f) => !!f) ?? null;
+
+              if (!configuredTarget && configuredFolders.length) {
+                new Notice(
+                  t(
+                    'The folder configured for new notes no longer exists. The note was created in the default location.'
+                  ),
+                  5000
+                );
+              }
+
+              const targetFolder =
+                configuredTarget ??
+                stateManager.app.fileManager.getNewFileParent(stateManager.file.path);
 
               let newFile: TFile;
 
