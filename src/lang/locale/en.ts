@@ -219,6 +219,7 @@ const en = {
   // components/Item/ItemMenu.ts
   'Edit card': 'Edit card',
   'New note from card': 'New note from card',
+  'Open note': 'Open note',
   'Archive card': 'Archive card',
   'Delete card': 'Delete card',
   'Edit date': 'Edit date',

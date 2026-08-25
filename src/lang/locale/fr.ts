@@ -226,6 +226,7 @@ const lang: Partial<Lang> = {
   // components/Item/ItemMenu.ts
   'Edit card': 'Modifier la carte',
   'New note from card': 'Nouvelle note depuis la carte',
+  'Open note': 'Ouvrir la note',
   'Archive card': 'Archiver la carte',
   'Delete card': 'Supprimer la carte',
   'Edit date': 'Modifier la date',

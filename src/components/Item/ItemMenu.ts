@@ -50,8 +50,28 @@ export function useItemMenu({
           .onClick(() => setEditState(coordinates));
       });
 
+      const openInSplit = async (file: TFile) => {
+        const leaf = stateManager.app.workspace.splitActiveLeaf();
+
+        await leaf.openFile(file);
+
+        stateManager.app.workspace.setActiveLeaf(leaf, false, true);
+      };
+
+      // Once a note has been created from a card, the card links to it. Offer to
+      // open that note rather than silently creating a second one on every click.
+      const linkedNote = item.data.metadata.file;
+
       menu
         .addItem((i) => {
+          if (linkedNote) {
+            i.setIcon('lucide-file-symlink')
+              .setTitle(t('Open note'))
+              .onClick(() => openInSplit(linkedNote));
+
+            return;
+          }
+
           i.setIcon('lucide-file-plus-2')
             .setTitle(t('New note from card'))
             .onClick(async () => {
@@ -145,11 +165,7 @@ export function useItemMenu({
                 return;
               }
 
-              const newLeaf = stateManager.app.workspace.splitActiveLeaf();
-
-              await newLeaf.openFile(newFile);
-
-              stateManager.app.workspace.setActiveLeaf(newLeaf, false, true);
+              await openInSplit(newFile);
 
               await applyTemplate(stateManager, newNoteTemplatePath as string | undefined);
 
