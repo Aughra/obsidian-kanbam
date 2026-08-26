@@ -26,6 +26,9 @@ jobs:
       - name: Types, lint, format
         run: yarn check-all
 
+      - name: Tests
+        run: yarn test
+
       - name: Build plugin
         run: yarn build
 
