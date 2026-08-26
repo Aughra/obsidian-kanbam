@@ -10,7 +10,8 @@ package-lock.json
 .DS_Store
 *.js.map
 .env
-yarn*
+yarn-error.log
+.yarn/
 dist
 test-vault/
 main.js
