@@ -16,3 +16,6 @@ dist
 test-vault/
 main.js
 styles.css
+
+# tests
+coverage/
