@@ -3,9 +3,8 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    jest: true,
   },
-  ignorePatterns: ['./src/docs'],
+  ignorePatterns: ['src/components/Editor/flatpickr/**'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -46,7 +45,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.13',
+      version: '18.0',
     },
   },
 };
