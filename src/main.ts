@@ -779,17 +779,21 @@ export default class KanbanPlugin extends Plugin {
 
         setViewState(next) {
           return function (state: ViewState, ...rest: any[]) {
+            // ViewState.state est typé Record<string, unknown> depuis obsidian 1.13 :
+            // le chemin doit être retypé avant de servir de clé ou d'argument.
+            const statePath = state.state?.file as string;
+
             if (
               // Don't force kanban mode during shutdown
               self._loaded &&
               // If we have a markdown file
               state.type === 'markdown' &&
-              state.state?.file &&
+              statePath &&
               // And the current mode of the file is not set to markdown
-              self.kanbanFileModes[this.id || state.state.file] !== 'markdown'
+              self.kanbanFileModes[this.id || statePath] !== 'markdown'
             ) {
               // Then check for the kanban frontMatterKey
-              const cache = self.app.metadataCache.getCache(state.state.file);
+              const cache = self.app.metadataCache.getCache(statePath);
 
               if (cache?.frontmatter && cache.frontmatter[frontmatterKey]) {
                 // If we have it, force the view type to kanban
@@ -798,7 +802,7 @@ export default class KanbanPlugin extends Plugin {
                   type: kanbanViewType,
                 };
 
-                self.kanbanFileModes[state.state.file] = kanbanViewType;
+                self.kanbanFileModes[statePath] = kanbanViewType;
 
                 return next.apply(this, [newState, ...rest]);
               }
