@@ -214,11 +214,7 @@ export function toggleTaskString(app: App, item: string, file: TFile): string | 
   return plugin.apiV1?.executeToggleTaskDoneCommand?.(item, file.path) ?? null;
 }
 
-export function toggleTask(
-  app: App,
-  item: Item,
-  file: TFile
-): [string[], string[], number] | null {
+export function toggleTask(app: App, item: Item, file: TFile): [string[], string[], number] | null {
   const plugin = getTasksPlugin(app);
   if (!plugin) {
     return null;
