@@ -1,0 +1,4 @@
+# Tiers vendorisé dans src/ : gardé tel que l'amont le publie, pour qu'une
+# remise à jour reste un diff propre. Déjà hors d'ESLint (ignorePatterns) et
+# hors de l'include du tsconfig.
+src/components/Editor/flatpickr/
