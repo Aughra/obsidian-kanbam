@@ -26,10 +26,21 @@ Find the plugin documentation here: [Obsidian Kanban Plugin Documentation](https
 All install/build/typecheck commands run inside the provided Docker container — nothing is installed globally on the host.
 
 ```sh
-docker compose build                        # build the dev image (Node LTS + yarn)
-docker compose run --rm dev yarn install     # install dependencies (into a named volume)
-docker compose run --rm dev yarn build       # build main.js / styles.css
-docker compose run --rm dev yarn run typecheck
+docker compose build                        # build the dev image (Node 24 + yarn 1)
+docker compose run --rm dev yarn install    # install dependencies (into a named volume)
+docker compose run --rm dev yarn build      # build main.js / styles.css
+docker compose run --rm dev yarn check-all  # types + lint + format
+```
+
+`check-all` runs `check:types` (tsc), `check:code` (eslint) and
+`check:format` (prettier). Their `fix:*` counterparts apply what can be
+applied automatically; `fix` runs both. The aggregate is *not* named
+`check`: `yarn check` is a built-in yarn 1 command that verifies
+`node_modules` and exits 0 without ever running the script — a green
+result that means nothing.
+
+```sh
+docker compose run --rm dev yarn fix        # format + autofixable lint
 ```
 
 `node_modules` lives in a Docker named volume (not bind-mounted), to avoid mixing Linux binaries into the macOS host and to keep installs fast.
