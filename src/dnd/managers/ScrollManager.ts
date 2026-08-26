@@ -82,7 +82,7 @@ export class ScrollManager {
 
           if (targetId && this.observerHandlers.has(targetId)) {
             const handler = this.observerHandlers.get(targetId);
-            handler && handler(entry);
+            handler?.(entry);
           }
         });
       },

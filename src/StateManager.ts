@@ -410,7 +410,7 @@ export class StateManager {
           data: {
             archive: {
               $push: shouldAppendArchiveDate
-                ? await Promise.all(archived.map((item) => appendArchiveDate(item)))
+                ? archived.map((item) => appendArchiveDate(item))
                 : archived,
             },
           },

@@ -252,7 +252,11 @@ export function diffApply(obj: Diffable, diff: Op[]) {
     }
 
     if (thisOp === REMOVE && typeof lastProp === 'number') {
-      Array.isArray(subObject) ? subObject.splice(lastProp, 1) : delete subObject[lastProp];
+      if (Array.isArray(subObject)) {
+        subObject.splice(lastProp, 1);
+      } else {
+        delete subObject[lastProp];
+      }
     }
 
     if (thisOp === REPLACE || thisOp === ADD) {

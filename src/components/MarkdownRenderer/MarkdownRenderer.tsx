@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import classcat from 'classcat';
 import Mark from 'mark.js';
 import moment from 'moment';
@@ -84,7 +83,6 @@ export class BasicMarkdownRenderer extends Component {
     this.render();
   }
 
-  // eslint-disable-next-line react/require-render-return
   async render() {
     this.containerEl.empty();
 

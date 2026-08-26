@@ -129,7 +129,7 @@ export function MarkdownEditor({
       updateBottomPadding() {}
       onUpdate(update: ViewUpdate, changed: boolean) {
         super.onUpdate(update, changed);
-        onChange && onChange(update);
+        onChange?.(update);
       }
       buildLocalExtensions(): Extension[] {
         const extensions = super.buildLocalExtensions();
