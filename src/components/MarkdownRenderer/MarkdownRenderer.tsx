@@ -1,7 +1,6 @@
 import classcat from 'classcat';
 import Mark from 'mark.js';
-import moment from 'moment';
-import { Component, MarkdownRenderer as ObsidianRenderer, getLinkpath } from 'obsidian';
+import { Component, MarkdownRenderer as ObsidianRenderer, getLinkpath, moment } from 'obsidian';
 import { CSSProperties, memo, useEffect, useRef } from 'preact/compat';
 import { useContext } from 'preact/hooks';
 import { KanbanView } from 'src/KanbanView';
