@@ -44,6 +44,15 @@ export function getSearchValue(item: Item, stateManager: StateManager) {
 
   const searchValue = [titleSearchRaw];
 
+  // Le numéro de brouillon. Sans lui, une carte qui le tient de sa fiche liée
+  // (et non de son texte) est introuvable en cherchant « 600 » : getSearchValue
+  // ne voit que le titre et les clés du réglage « metadata-keys », or ce numéro
+  // se lit hors de ce réglage, exprès. Poussé avec son mot pour que « draft 600 »
+  // trouve aussi bien que « 600 ».
+  if (item.data.metadata.draft !== undefined) {
+    searchValue.push(`draft ${item.data.metadata.draft}`);
+  }
+
   if (fileMetadata) {
     const presentKeys = Object.keys(fileMetadata).filter((k) => {
       return item.data.metadata.fileMetadataOrder?.includes(k);
@@ -234,6 +243,52 @@ export function getLinkedPageMetadata(
     fileMetadata: haveData ? metadata : undefined,
     fileMetadataOrder: order,
   };
+}
+
+// Le mot doit précéder le nombre, d'où l'absence d'alternative « nombre seul » :
+// « Sprint 2 », « (#985) » et « draft: true » ne doivent rien produire.
+const draftInText = /\b(?:drafts?|brouillons?)\s*(?:n[°o]\s*)?(\d{1,6})\b/i;
+
+/**
+ * Numéro de brouillon nommé dans le texte d'une carte.
+ *
+ * Les cartes de suivi éditorial citent le brouillon en toutes lettres
+ * (« — draft 600 : aucun bouton… », « le brouillon 595 en verdict review »).
+ * C'est l'identifiant qu'on redonne ensuite au cockpit ou à l'agent : on
+ * l'extrait pour l'afficher à part, au lieu de le laisser au milieu d'une
+ * phrase où il faut aller le chercher.
+ */
+export function extractDraftNumber(text: string | null | undefined): number | undefined {
+  const match = text?.match(draftInText);
+  return match ? Number(match[1]) : undefined;
+}
+
+/**
+ * Numéro de brouillon porté par le frontmatter de la fiche liée (clé `draft`).
+ *
+ * Prioritaire sur le texte de la carte : quand la fiche le déclare, c'est une
+ * donnée, pas une tournure de phrase. Volontairement lu hors de
+ * `getLinkedPageMetadata` — celui-ci ne rend que les clés listées dans le
+ * réglage « metadata-keys » et rend main vide quand la liste l'est, alors que
+ * ce numéro doit s'afficher sans réglage préalable.
+ *
+ * Une valeur non numérique (`draft: true`, courant dans les frontmatters de
+ * publication) ne donne rien : c'est un autre sens du mot.
+ */
+export function getLinkedPageDraft(
+  stateManager: StateManager,
+  linkedFile: TFile | null | undefined
+): number | undefined {
+  if (!linkedFile) return undefined;
+
+  const raw = stateManager.app.metadataCache.getFileCache(linkedFile)?.frontmatter?.draft;
+
+  if (typeof raw === 'number') return Number.isFinite(raw) ? raw : undefined;
+  if (typeof raw !== 'string') return undefined;
+
+  const trimmed = raw.trim();
+
+  return /^\d{1,6}$/.test(trimmed) ? Number(trimmed) : undefined;
 }
 
 export function shouldRefreshBoard(oldSettings: KanbanSettings, newSettings: KanbanSettings) {

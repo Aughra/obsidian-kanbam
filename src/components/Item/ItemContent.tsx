@@ -180,6 +180,27 @@ export function Tags({
   );
 }
 
+/**
+ * Numéro de brouillon, en évidence dans le cadre de la carte.
+ *
+ * C'est l'identifiant qu'on cite pour désigner le brouillon ailleurs — cockpit,
+ * agent, conversation. Le laisser au milieu de la phrase oblige à le relire pour
+ * le retrouver ; en tête de carte, il se prend d'un coup d'œil.
+ *
+ * Le mot « draft » n'est pas traduit : c'est le terme employé de bout en chaîne,
+ * du frontmatter des fiches au cockpit éditorial.
+ */
+export function DraftNumber({ draft }: { draft?: number }) {
+  if (draft === undefined) return null;
+
+  return (
+    <div className={c('item-draft')}>
+      <span className={c('item-draft-label')}>draft</span>
+      <span className={c('item-draft-value')}>{draft}</span>
+    </div>
+  );
+}
+
 export const ItemContent = memo(function ItemContent({
   item,
   editState,
@@ -276,6 +297,7 @@ export const ItemContent = memo(function ItemContent({
 
   return (
     <div onClick={onWrapperClick} className={c('item-title')}>
+      <DraftNumber draft={item.data.metadata.draft} />
       {isStatic ? (
         <MarkdownClonedPreviewRenderer
           entityId={item.id}

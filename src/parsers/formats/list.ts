@@ -20,7 +20,7 @@ import { defaultSort } from 'src/helpers/util';
 import { t } from 'src/lang/helpers';
 import { visit } from 'unist-util-visit';
 
-import { archiveString, completeString, settingsToCodeblock } from '../common';
+import { archiveString, completeString, extractDraftNumber, settingsToCodeblock } from '../common';
 import { DateNode, FileNode, TimeNode, ValueNode } from '../extensions/types';
 import {
   ContentBoundary,
@@ -105,6 +105,7 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
       file: undefined,
       fileMetadata: undefined,
       fileMetadataOrder: undefined,
+      draft: undefined,
     },
     checked: item.checked,
     checkChar: item.checked ? item.checkChar || ' ' : ' ',
@@ -174,6 +175,9 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
         itemData.metadata.fileAccessor = (genericNode as FileNode).fileAccessor;
         itemData.metadata.fileMetadata = (genericNode as FileNode).fileMetadata;
         itemData.metadata.fileMetadataOrder = (genericNode as FileNode).fileMetadataOrder;
+        if (itemData.metadata.draft === undefined) {
+          itemData.metadata.draft = (genericNode as FileNode).draft;
+        }
         return true;
       }
 
@@ -181,6 +185,9 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
         itemData.metadata.fileAccessor = (genericNode as FileNode).fileAccessor;
         itemData.metadata.fileMetadata = (genericNode as FileNode).fileMetadata;
         itemData.metadata.fileMetadataOrder = (genericNode as FileNode).fileMetadataOrder;
+        if (itemData.metadata.draft === undefined) {
+          itemData.metadata.draft = (genericNode as FileNode).draft;
+        }
         return true;
       }
 
@@ -190,6 +197,13 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
       }
     }
   );
+
+  // Repli : aucune fiche liée ne déclare de numéro, mais le texte de la carte
+  // nomme souvent le brouillon (« — draft 600 : … »). C'est le cas de la
+  // majorité des cartes existantes, qu'on ne va pas réécrire une à une.
+  if (itemData.metadata.draft === undefined) {
+    itemData.metadata.draft = extractDraftNumber(itemData.titleRaw);
+  }
 
   itemData.title = preprocessTitle(stateManager, dedentNewLines(executeDeletion(title)));
 

@@ -6,7 +6,7 @@ import { KanbanSettings, settingKeyLookup } from 'src/Settings';
 import { StateManager } from 'src/StateManager';
 import { getNormalizedPath } from 'src/helpers/renderMarkdown';
 
-import { frontmatterKey, getLinkedPageMetadata } from './common';
+import { frontmatterKey, getLinkedPageDraft, getLinkedPageMetadata } from './common';
 import { blockidExtension, blockidFromMarkdown } from './extensions/blockid';
 import { genericWrappedExtension, genericWrappedFromMarkdown } from './extensions/genericWrapped';
 import { internalMarkdownLinks } from './extensions/internalMarkdownLink';
@@ -126,6 +126,7 @@ function getMdastExtensions(stateManager: StateManager) {
 
         node.fileMetadata = metadata.fileMetadata;
         node.fileMetadataOrder = metadata.fileMetadataOrder;
+        node.draft = getLinkedPageDraft(stateManager, file);
       }
     }),
     internalMarkdownLinks((node, isEmbed) => {
@@ -156,6 +157,7 @@ function getMdastExtensions(stateManager: StateManager) {
 
           node.fileMetadata = metadata.fileMetadata;
           node.fileMetadataOrder = metadata.fileMetadataOrder;
+          node.draft = getLinkedPageDraft(stateManager, file);
         }
       }
     }),

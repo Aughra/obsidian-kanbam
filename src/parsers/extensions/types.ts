@@ -19,4 +19,6 @@ export interface FileNode extends ValueNode {
   fileAccessor: FileAccessor;
   fileMetadata?: FileMetadata;
   fileMetadataOrder?: string[];
+  /** Clé `draft` du frontmatter de la fiche liée, quand elle est numérique. */
+  draft?: number;
 }

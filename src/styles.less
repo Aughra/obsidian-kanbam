@@ -855,6 +855,34 @@ button.kanban-plugin__new-item-button {
   border-radius: unset;
 }
 
+/* Numéro de brouillon — pastille de tête, lisible sans lire la carte.
+   Couleurs empruntées aux étiquettes : même famille visuelle, et elle suit le
+   thème d'Obsidian sans valeur codée en dur. */
+.kanban-plugin__item-draft {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-block-end: 4px;
+  padding-block: 1px;
+  padding-inline: 6px;
+  border-radius: var(--radius-s, 4px);
+  background-color: hsla(var(--interactive-accent-hsl), 0.12);
+  color: var(--text-accent);
+  font-size: 11px;
+  line-height: var(--line-height-tight);
+}
+
+.kanban-plugin__item-draft-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+.kanban-plugin__item-draft-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-semibold, 600);
+}
+
 .kanban-plugin__item-tags:not(:empty) {
   padding-block-start: 2px;
 }

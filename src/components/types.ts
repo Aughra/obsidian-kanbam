@@ -75,6 +75,11 @@ export interface ItemMetadata {
   fileMetadata?: FileMetadata;
   fileMetadataOrder?: string[];
   inlineMetadata?: InlineField[];
+  /**
+   * Numéro de brouillon de la carte : la clé `draft` de la fiche liée, ou à
+   * défaut le nombre cité dans le texte (« — draft 600 : … »).
+   */
+  draft?: number;
 }
 
 export interface ItemData {
