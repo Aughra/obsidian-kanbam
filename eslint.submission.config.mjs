@@ -27,6 +27,23 @@ export default tseslint.config(
       // le `moment` d'Obsidian) : tsc fait déjà ce travail, et mieux.
       'no-undef': 'off',
 
+      // Déviation assumée du fork (décision d'Eliorë, 2026-08-27).
+      //
+      // La règle veut `window.setTimeout()` là où le fork écrit
+      // `activeWindow.setTimeout()`, et invoque le même motif que lui : la
+      // compatibilité avec les fenêtres détachées. `window` désigne la fenêtre
+      // où le code s'exécute ; `activeWindow` celle qui a le focus. Un greffon
+      // empaqueté en un seul fichier est chargé par la fenêtre principale :
+      // pour lui, `window` reste la fenêtre principale même quand il dessine
+      // dans une fenêtre détachée — d'où `activeWindow` partout dans src/, et
+      // le greffon esbuild `replace` qui impose la même réécriture à tout
+      // node_modules (esbuild.config.mjs).
+      //
+      // Suivre la règle voudrait donc dire rouvrir ce greffon, pas corriger six
+      // lignes. Tant que ce n'est pas le sujet, on coupe la règle plutôt que de
+      // laisser six remontées qu'on n'a pas l'intention de solder.
+      'obsidianmd/prefer-window-timers': 'off',
+
       // Famille « typage strict », héritée de typescript-eslint
       // recommended-type-checked que la config obsidianmd embarque : 1 088
       // remontées sur du code de 2021 truffé de `any`. Ce n'est pas une exigence
