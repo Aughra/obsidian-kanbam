@@ -81,7 +81,7 @@
     "micromark-util-character": "^1.1.0",
     "micromark-util-symbol": "^1.1.0",
     "micromark-util-types": "^1.0.1",
-    "moment": "^2.29.4",
+    "moment": "2.29.4",
     "monkey-around": "^2.1.0",
     "obsidian-daily-notes-interface": "^0.9.4",
     "preact": "^10.8.2",
