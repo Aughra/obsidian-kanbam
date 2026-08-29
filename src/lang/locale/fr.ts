@@ -14,6 +14,18 @@ const lang: Partial<Lang> = {
   'New kanban board': 'Nouveau board',
   'Untitled Kanban': 'Board sans titre',
   'Toggle between Kanban and markdown mode': 'Basculer entre le board et le markdown',
+  'Open projects': 'Ouvrir les projets',
+
+  // ProjectsView.tsx / components/Projects
+  Projects: 'Projets',
+  'New project': 'Nouveau projet',
+  'Project name': 'Nom du projet',
+  Create: 'Créer',
+  Project: 'Projet',
+  Columns: 'Colonnes',
+  Cards: 'Cartes',
+  'Loading projects...': 'Chargement des projets...',
+  'No projects yet': 'Aucun projet pour le moment',
 
   'View as board': 'Afficher en board',
   'View as list': 'Afficher en liste',

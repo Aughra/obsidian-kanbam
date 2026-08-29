@@ -13,6 +13,7 @@ import { render, unmountComponentAtNode, useEffect, useState } from 'preact/comp
 
 import { createApp } from './DragDropApp';
 import { KanbanView, kanbanIcon, kanbanViewType } from './KanbanView';
+import { ProjectsView, projectsIcon, projectsViewType } from './ProjectsView';
 import { KanbanSettings, KanbanSettingsTab } from './Settings';
 import { StateManager } from './StateManager';
 import { DateSuggest, TimeSuggest } from './components/Editor/suggest';
@@ -130,6 +131,7 @@ export default class KanbanPlugin extends Plugin {
     this.addSettingTab(this.settingsTab);
 
     this.registerView(kanbanViewType, (leaf) => new KanbanView(leaf, this));
+    this.registerView(projectsViewType, (leaf) => new ProjectsView(leaf, this));
     this.registerMonkeyPatches();
     this.registerCommands();
     this.registerEvents();
@@ -146,6 +148,10 @@ export default class KanbanPlugin extends Plugin {
 
     this.addRibbonIcon(kanbanIcon, t('Create new board'), () => {
       this.newKanban();
+    });
+
+    this.addRibbonIcon(projectsIcon, t('Open projects'), () => {
+      this.openProjects();
     });
   }
 
@@ -355,6 +361,39 @@ export default class KanbanPlugin extends Plugin {
     } catch (e) {
       console.error('Error creating kanban board:', e);
     }
+  }
+
+  async newProject(name: string, folder?: TFolder): Promise<TFile | null> {
+    const targetFolder = folder
+      ? folder
+      : this.app.fileManager.getNewFileParent(this.app.workspace.getActiveFile()?.path || '');
+
+    try {
+      const board: TFile = await (this.app.fileManager as any).createNewMarkdownFile(
+        targetFolder,
+        `Kanbam data ${name}`
+      );
+
+      await this.app.vault.modify(board, basicFrontmatter);
+
+      return board;
+    } catch (e) {
+      console.error('Error creating project board:', e);
+      return null;
+    }
+  }
+
+  async openProjects() {
+    const existing = this.app.workspace.getLeavesOfType(projectsViewType);
+
+    if (existing.length > 0) {
+      this.app.workspace.revealLeaf(existing[0]);
+      return;
+    }
+
+    const leaf = this.app.workspace.getLeaf('tab');
+    await leaf.setViewState({ type: projectsViewType, active: true });
+    this.app.workspace.revealLeaf(leaf);
   }
 
   registerEvents() {
@@ -577,6 +616,12 @@ export default class KanbanPlugin extends Plugin {
       id: 'create-new-kanban-board',
       name: t('Create new board'),
       callback: () => this.newKanban(),
+    });
+
+    this.addCommand({
+      id: 'open-projects',
+      name: t('Open projects'),
+      callback: () => this.openProjects(),
     });
 
     this.addCommand({

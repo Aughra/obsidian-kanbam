@@ -12,6 +12,18 @@ const en = {
   'New kanban board': 'New kanban board',
   'Untitled Kanban': 'Untitled Kanban',
   'Toggle between Kanban and markdown mode': 'Toggle between Kanban and markdown mode',
+  'Open projects': 'Open projects',
+
+  // ProjectsView.tsx / components/Projects
+  Projects: 'Projects',
+  'New project': 'New project',
+  'Project name': 'Project name',
+  Create: 'Create',
+  Project: 'Project',
+  Columns: 'Columns',
+  Cards: 'Cards',
+  'Loading projects...': 'Loading projects...',
+  'No projects yet': 'No projects yet',
 
   'View as board': 'View as board',
   'View as list': 'View as list',
