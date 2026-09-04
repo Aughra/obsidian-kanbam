@@ -291,6 +291,44 @@ export function getLinkedPageDraft(
   return /^\d{1,6}$/.test(trimmed) ? Number(trimmed) : undefined;
 }
 
+// `<projet>-<domaine>-NNN` (p. ex. « tortuetech-auto-agent-013 ») ou, plus
+// rarement, `<projet>-NNN` (p. ex. « aya-shell-001 » compte comme domaine
+// unique). Le numéro est toujours en toutes fin de segment, sur 1 à 6
+// chiffres, précédé d'un tiret — ce qui exclut une année ou un nombre isolé
+// ailleurs dans le titre.
+const ficheNumber = /\b([a-z][a-z0-9]*(?:-[a-z0-9]+)+-\d{1,6})\b/i;
+
+/**
+ * Numéro de fiche porté par une carte (« tortuetech-auto-agent-013 »,
+ * « aya-shell-001 »…).
+ *
+ * Les tableaux Kanbam nomment la fiche en tête de carte, dans la cible du
+ * lien wiki qui la porte (`[[tortuetech-auto-agent-013 titre…]]`). On le lit
+ * en priorité là — c'est la donnée, pas une tournure de phrase — et on
+ * retombe sur le texte brut de la carte pour les cartes sans lien résolu.
+ */
+export function extractFicheNumber(text: string | null | undefined): string | undefined {
+  const match = text?.match(ficheNumber);
+  return match ? match[1] : undefined;
+}
+
+// `[^\[\]]+` exclut le `[[…]]` d'un lien wiki : celui-ci ouvre par un second
+// crochet, jamais capté ici.
+const leadingBracketPrefix = /^\[[^[\]]+\]\s*/;
+
+/**
+ * Retire le préfixe `[catégorie]` en tête de carte (« [auto-agent] »,
+ * « [ui] »…), posé par convention dans les tableaux Kanbam pour marquer la
+ * colonne logique du projet agrégateur.
+ *
+ * Affichage seulement : la donnée qu'il porte reste ailleurs (le lien vers la
+ * fiche, dont le numéro nomme déjà le domaine) — ce n'est pas un tag Obsidian,
+ * rien à faire disparaître côté filtrage.
+ */
+export function stripLeadingBracketPrefix(text: string): string {
+  return text.replace(leadingBracketPrefix, '');
+}
+
 export function shouldRefreshBoard(oldSettings: KanbanSettings, newSettings: KanbanSettings) {
   if (!oldSettings && newSettings) {
     return true;

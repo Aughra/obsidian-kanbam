@@ -201,6 +201,25 @@ export function DraftNumber({ draft }: { draft?: number }) {
   );
 }
 
+/**
+ * Numéro de fiche, en tête de carte — même esprit que `DraftNumber` : un
+ * identifiant qu'on cite ailleurs (tableau, note liée) mérite de se prendre
+ * d'un coup d'œil plutôt que de se relire au milieu du titre.
+ *
+ * Remplace le préfixe `[catégorie]` retiré de l'affichage : la donnée de
+ * projet/domaine reste lisible ici, portée par le numéro lui-même
+ * (`<projet>-<domaine>-NNN`), sans le crochet brut qui encombrait la carte.
+ */
+export function FicheNumber({ ficheNumber }: { ficheNumber?: string }) {
+  if (!ficheNumber) return null;
+
+  return (
+    <div className={c('item-fiche-number')}>
+      <span className={c('item-fiche-number-value')}>{ficheNumber}</span>
+    </div>
+  );
+}
+
 export const ItemContent = memo(function ItemContent({
   item,
   editState,
@@ -297,6 +316,7 @@ export const ItemContent = memo(function ItemContent({
 
   return (
     <div onClick={onWrapperClick} className={c('item-title')}>
+      <FicheNumber ficheNumber={item.data.metadata.ficheNumber} />
       <DraftNumber draft={item.data.metadata.draft} />
       {isStatic ? (
         <MarkdownClonedPreviewRenderer

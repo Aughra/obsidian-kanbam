@@ -20,7 +20,14 @@ import { defaultSort } from 'src/helpers/util';
 import { t } from 'src/lang/helpers';
 import { visit } from 'unist-util-visit';
 
-import { archiveString, completeString, extractDraftNumber, settingsToCodeblock } from '../common';
+import {
+  archiveString,
+  completeString,
+  extractDraftNumber,
+  extractFicheNumber,
+  settingsToCodeblock,
+  stripLeadingBracketPrefix,
+} from '../common';
 import { DateNode, FileNode, TimeNode, ValueNode } from '../extensions/types';
 import {
   ContentBoundary,
@@ -106,6 +113,7 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
       fileMetadata: undefined,
       fileMetadataOrder: undefined,
       draft: undefined,
+      ficheNumber: undefined,
     },
     checked: item.checked,
     checkChar: item.checked ? item.checkChar || ' ' : ' ',
@@ -178,6 +186,11 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
         if (itemData.metadata.draft === undefined) {
           itemData.metadata.draft = (genericNode as FileNode).draft;
         }
+        if (itemData.metadata.ficheNumber === undefined) {
+          itemData.metadata.ficheNumber = extractFicheNumber(
+            (genericNode as FileNode).fileAccessor?.target
+          );
+        }
         return true;
       }
 
@@ -187,6 +200,11 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
         itemData.metadata.fileMetadataOrder = (genericNode as FileNode).fileMetadataOrder;
         if (itemData.metadata.draft === undefined) {
           itemData.metadata.draft = (genericNode as FileNode).draft;
+        }
+        if (itemData.metadata.ficheNumber === undefined) {
+          itemData.metadata.ficheNumber = extractFicheNumber(
+            (genericNode as FileNode).fileAccessor?.target
+          );
         }
         return true;
       }
@@ -205,7 +223,16 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
     itemData.metadata.draft = extractDraftNumber(itemData.titleRaw);
   }
 
-  itemData.title = preprocessTitle(stateManager, dedentNewLines(executeDeletion(title)));
+  // Repli identique pour le numéro de fiche : cartes sans lien résolu, ou
+  // dont le lien ne pointe pas (encore) vers un fichier existant.
+  if (itemData.metadata.ficheNumber === undefined) {
+    itemData.metadata.ficheNumber = extractFicheNumber(itemData.titleRaw);
+  }
+
+  itemData.title = preprocessTitle(
+    stateManager,
+    stripLeadingBracketPrefix(dedentNewLines(executeDeletion(title)))
+  );
 
   const firstLineEnd = itemData.title.indexOf('\n');
   const inlineFields = extractInlineFields(stateManager.app, itemData.title, true);

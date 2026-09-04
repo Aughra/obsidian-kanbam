@@ -80,6 +80,11 @@ export interface ItemMetadata {
    * défaut le nombre cité dans le texte (« — draft 600 : … »).
    */
   draft?: number;
+  /**
+   * Numéro de fiche porté par la carte (« tortuetech-auto-agent-013 »),
+   * lu dans la cible du lien wiki qui la porte, ou à défaut dans le texte.
+   */
+  ficheNumber?: string;
 }
 
 export interface ItemData {

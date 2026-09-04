@@ -883,6 +883,21 @@ button.kanban-plugin__new-item-button {
   font-weight: var(--font-semibold, 600);
 }
 
+/* Numéro de fiche — première ligne de la carte, distincte du texte qui suit.
+   Remplace le préfixe « [catégorie] » retiré de l'affichage : le numéro
+   (« tortuetech-auto-agent-013 ») porte déjà le projet et le domaine, pas
+   besoin du crochet brut pour s'y retrouver. */
+.kanban-plugin__item-fiche-number {
+  display: block;
+  margin-block-end: 2px;
+}
+
+.kanban-plugin__item-fiche-number-value {
+  font-size: 0.85em;
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-accent);
+}
+
 .kanban-plugin__item-tags:not(:empty) {
   padding-block-start: 2px;
 }
