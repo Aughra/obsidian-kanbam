@@ -64,8 +64,15 @@ if (typeof globals.window === 'undefined') {
   globals.window = globalThis;
 }
 
-if (typeof globals.window.localStorage === 'undefined') {
-  globals.window.localStorage = localStorageStub;
+// happy-dom 20 expose bien un `window.localStorage`, mais l'objet est nu sous
+// cet environnement : `getItem` n'y est pas. On teste donc la méthode qu'on
+// consomme, pas la seule présence de l'objet.
+if (typeof globals.window.localStorage?.getItem !== 'function') {
+  Object.defineProperty(globals.window, 'localStorage', {
+    value: localStorageStub,
+    writable: true,
+    configurable: true,
+  });
 }
 
 // Le greffon esbuild `replace` réécrit setTimeout/requestAnimationFrame en
